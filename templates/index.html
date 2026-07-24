@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>潮汐文萃 – 潮汐文萃官方网站</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="site-logo">
+                <h1><a href="/">潮汐文萃</a></h1>
+                <span class="site-desc">潮汐文萃官方网站</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-item{% if not current_category %} active{% endif %}">全部</a>
+            {% for cat in categories %}
+            <a href="/?category={{ cat.category_slug }}" class="nav-item{% if current_category == cat.category_slug %} active{% endif %}">{{ cat.category }}</a>
+            {% endfor %}
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-wrap">
+        <div class="content-area">
+
+            <!-- Featured Section -->
+            {% if featured and not current_category and not current_date %}
+            <div class="featured-section">
+                {% for f in featured %}
+                <div class="featured-item">
+                    {% if f.image_url %}
+                    <div class="featured-thumb">
+                        <a href="/post/{{ f.post_id }}">
+                            <img src="/imgproxy?url={{ f.image_url }}" alt="{{ f.title }}" loading="lazy">
+                        </a>
+                    </div>
+                    {% endif %}
+                    <div class="featured-info">
+                        <h2><a href="/post/{{ f.post_id }}">{{ f.title }}</a></h2>
+                        <p>{{ f.excerpt }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Date Filter -->
+            <div class="date-filter">
+                <a href="/" class="date-btn{% if not current_date %} active{% endif %}">全部日期</a>
+                <a href="/?date=7月 23 日" class="date-btn{% if current_date == '7月 23 日' %} active{% endif %}">7月23日</a>
+                <a href="/?date=7月 22 日" class="date-btn{% if current_date == '7月 22 日' %} active{% endif %}">7月22日</a>
+            </div>
+
+            <!-- Post List -->
+            <div class="post-list">
+                {% for post in posts %}
+                <article class="post-card{% if post.video_url %} has-video{% endif %}">
+                    <div class="post-card-inner">
+                        {% if post.image_url %}
+                        <div class="post-thumb">
+                            <a href="/post/{{ post.post_id }}">
+                                <img src="/imgproxy?url={{ post.image_url }}" alt="{{ post.title }}" loading="lazy">
+                            </a>
+                            {% if post.video_url %}
+                            <span class="video-badge">▶ 视频</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        <div class="post-info">
+                            <div class="post-meta">
+                                <a href="/?category={{ post.category_slug }}" class="post-category">{{ post.category }}</a>
+                                <span class="post-dot">•</span>
+                                <span class="post-date">{{ post.date }}</span>
+                                <span class="post-dot">•</span>
+                                <span class="post-author">小编: {{ post.author }}</span>
+                            </div>
+                            <h2 class="post-title">
+                                <a href="/post/{{ post.post_id }}">{{ post.title }}</a>
+                            </h2>
+                            <p class="post-excerpt">{{ post.excerpt }}</p>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+
+            {% if not posts %}
+            <div class="no-posts">暂无文章</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>© 2026 潮汐文萃 · 本站内容来自 <a href="https://www.bohaishibei.com/" target="_blank">bohaishibei.com</a> 最近2天的收录</p>
+        </div>
+    </footer>
+</body>
+</html>

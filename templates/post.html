@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }} – 潮汐文萃</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <div class="site-logo">
+                <h1><a href="/">潮汐文萃</a></h1>
+                <span class="site-desc">潮汐文萃官方网站</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-item">全部</a>
+            <a href="/?category=digest" class="nav-item">文摘</a>
+            <a href="/?category=tao" class="nav-item">优惠</a>
+            <a href="/?category=videos" class="nav-item">视频</a>
+            <a href="/?category=main" class="nav-item">潮汐文萃</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-wrap">
+        <div class="content-area">
+            <article class="post-detail">
+                <div class="post-meta">
+                    <a href="/?category={{ article.category_slug }}" class="post-category">{{ article.category }}</a>
+                    <span class="post-dot">•</span>
+                    <span class="post-date">{{ article.date }}</span>
+                    <span class="post-dot">•</span>
+                    <span class="post-author">小编: {{ article.author }}</span>
+                </div>
+                <h1 class="post-detail-title">{{ article.title }}</h1>
+
+                <!-- Cover image -->
+                {% if article.image_url %}
+                <div class="post-cover-img">
+                    <img src="/imgproxy?url={{ article.image_url }}" alt="{{ article.title }}" loading="lazy">
+                </div>
+                {% endif %}
+
+                <!-- Video embed -->
+                {% if article.video_url %}
+                <div class="post-video-embed">
+                    <iframe src="{{ article.video_url }}"
+                            scrolling="no"
+                            border="0"
+                            frameborder="no"
+                            framespacing="0"
+                            allowfullscreen="true"
+                            sandbox="allow-top-navigation allow-same-origin allow-forms allow-scripts">
+                    </iframe>
+                </div>
+                {% endif %}
+
+                <!-- Article content: use HTML content with inline images if available -->
+                <div class="post-content">
+                    {% if article.content_html %}
+                    {{ article.content_html|safe }}
+                    {% else %}
+                    {{ article.content }}
+                    {% endif %}
+                </div>
+
+                <!-- Navigation between posts -->
+                <div class="post-nav">
+                    {% if prev_post %}
+                    <a href="/post/{{ prev_post.post_id }}" class="post-nav-prev">← {{ prev_post.title }}</a>
+                    {% endif %}
+                    {% if next_post %}
+                    <a href="/post/{{ next_post.post_id }}" class="post-nav-next">{{ next_post.title }} →</a>
+                    {% endif %}
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <p>© 2026 潮汐文萃 · 本站内容来自 <a href="https://www.bohaishibei.com/" target="_blank">bohaishibei.com</a> 最近2天的收录</p>
+        </div>
+    </footer>
+</body>
+</html>
