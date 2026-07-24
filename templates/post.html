@@ -41,14 +41,7 @@
                 </div>
                 <h1 class="post-detail-title">{{ article.title }}</h1>
 
-                <!-- Cover image -->
-                {% if article.image_url %}
-                <div class="post-cover-img">
-                    <img src="/imgproxy?url={{ article.image_url }}" alt="{{ article.title }}" loading="lazy">
-                </div>
-                {% endif %}
-
-                <!-- Video embed -->
+                <!-- Video embed (show before content) -->
                 {% if article.video_url %}
                 <div class="post-video-embed">
                     <iframe src="{{ article.video_url }}"
@@ -67,6 +60,12 @@
                     {% if article.content_html %}
                     {{ article.content_html|safe }}
                     {% else %}
+                    <!-- Cover image (only shown when no HTML content with inline images) -->
+                    {% if article.image_url %}
+                    <div class="post-cover-img">
+                        <img src="/imgproxy?url={{ article.image_url }}" alt="{{ article.title }}" loading="lazy">
+                    </div>
+                    {% endif %}
                     {{ article.content }}
                     {% endif %}
                 </div>
