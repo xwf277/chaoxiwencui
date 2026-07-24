@@ -42,13 +42,10 @@ def index():
     # Get dates for sidebar
     dates = c.execute('SELECT DISTINCT date FROM posts ORDER BY date DESC').fetchall()
 
-    # Get featured posts (潮汐文萃 category)
-    featured = c.execute('SELECT * FROM posts WHERE category_slug = "main" ORDER BY post_id DESC').fetchall()
-
     conn.close()
 
     return render_template('index.html', posts=posts, categories=categories,
-                           dates=dates, featured=featured, current_category=category,
+                           dates=dates, current_category=category,
                            current_date=date_filter)
 
 @app.route('/post/<int:post_id>')

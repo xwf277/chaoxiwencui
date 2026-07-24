@@ -31,27 +31,6 @@
     <div class="main-wrap">
         <div class="content-area">
 
-            <!-- Featured Section -->
-            {% if featured and not current_category and not current_date %}
-            <div class="featured-section">
-                {% for f in featured %}
-                <div class="featured-item">
-                    {% if f.image_url %}
-                    <div class="featured-thumb">
-                        <a href="/post/{{ f.post_id }}">
-                            <img src="/imgproxy?url={{ f.image_url }}" alt="{{ f.title }}" loading="lazy">
-                        </a>
-                    </div>
-                    {% endif %}
-                    <div class="featured-info">
-                        <h2><a href="/post/{{ f.post_id }}">{{ f.title }}</a></h2>
-                        <p>{{ f.excerpt }}</p>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
             <!-- Date Filter -->
             <div class="date-filter">
                 <a href="/" class="date-btn{% if not current_date %} active{% endif %}">全部日期</a>
