@@ -7,7 +7,7 @@ Features:
 - Skip "优惠" (category-tao) articles
 - For each new article, scrape full content (HTML + text + images + videos)
 - Update local database
-- Deploy updated database to cloud server (47.96.79.71)
+- Deploy updated database to cloud server (120.55.126.106)
 - At 21:40 run (hour == 21), also push to GitHub
 
 Usage:
@@ -414,9 +414,9 @@ def push_to_github(config):
     subprocess.run(['git', 'commit', '-m', commit_msg],
                    capture_output=True, cwd=SCRIPT_DIR)
 
-    # Push using token in URL
+    # Push using token in URL (force to handle any divergence)
     push_url = f'https://xwf277:{token}@github.com/{repo}.git'
-    result = subprocess.run(['git', 'push', push_url, branch],
+    result = subprocess.run(['git', 'push', push_url, branch, '--force'],
                            capture_output=True, text=True, cwd=SCRIPT_DIR)
 
     if result.returncode == 0:
@@ -424,7 +424,61 @@ def push_to_github(config):
         return True
     else:
         print(f'  GitHub push failed: {result.stderr}')
-        return False
+        # Fallback: try GitHub Contents API for database.db
+        try:
+            push_via_github_api(config, commit_msg)
+            print(f'  GitHub API fallback successful')
+            return True
+        except Exception as api_err:
+            print(f'  GitHub API fallback failed: {api_err}')
+            return False
+
+
+def push_via_github_api(config, commit_msg):
+    """Fallback: push database.db via GitHub Contents API when git push fails."""
+    import urllib.request
+    import base64
+
+    gh = config['github']
+    token = gh['token']
+    owner, repo = gh['repo'].split('/')
+
+    for filepath in ['database.db', 'scrape_results.json']:
+        local_path = os.path.join(SCRIPT_DIR, filepath)
+        if not os.path.exists(local_path):
+            continue
+
+        # Get current SHA (required for update)
+        api_url = f'https://api.github.com/repos/{owner}/{repo}/contents/{filepath}'
+        req = urllib.request.Request(api_url,
+            headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'})
+        try:
+            resp = urllib.request.urlopen(req)
+            data = json.loads(resp.read())
+            sha = data['sha']
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                sha = None  # File doesn't exist yet
+            else:
+                raise
+
+        # Read and encode file
+        with open(local_path, 'rb') as f:
+            content_b64 = base64.b64encode(f.read()).decode('utf-8')
+
+        # Update via API
+        update_data = json.dumps({
+            'message': commit_msg,
+            'content': content_b64,
+            'sha': sha
+        }).encode('utf-8')
+
+        req2 = urllib.request.Request(api_url, data=update_data,
+            headers={'Authorization': f'token {token}', 'Content-Type': 'application/json',
+                     'Accept': 'application/vnd.github.v3+json'},
+            method='PUT')
+        urllib.request.urlopen(req2)
+        print(f'  API updated: {filepath}')
 
 
 def main():
