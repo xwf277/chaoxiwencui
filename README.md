@@ -1,4 +1,4 @@
-# chaoxiwencui (潮汐文萃)
+# chaoxiwencui (每日拾趣)
 
 基于 Flask + SQLite 的内容资讯网站，克隆自 bohaishibei.com 的内容架构。
 

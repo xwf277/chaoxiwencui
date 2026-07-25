@@ -1,6 +1,6 @@
 """
 Re-scrape all posts to get the full HTML content with inline images.
-This is critical for 潮汐文萃 collection posts where each numbered item 【1】【2】...
+This is critical for 每日拾趣 collection posts where each numbered item 【1】【2】...
 is paired with an image/GIF that must be displayed inline.
 """
 import sqlite3

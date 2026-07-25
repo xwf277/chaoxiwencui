@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, Response
 import sqlite3
 import os
+import re
 import requests as req_lib
 
 app = Flask(__name__)
@@ -29,8 +30,8 @@ def index():
         params.append(category)
 
     if date_filter:
-        query += ' AND date LIKE ?'
-        params.append(f'%{date_filter}%')
+        query += ' AND date = ?'
+        params.append(date_filter)
 
     query += ' ORDER BY post_id DESC'
 
@@ -39,8 +40,18 @@ def index():
     # Get categories for sidebar
     categories = c.execute('SELECT DISTINCT category, category_slug FROM posts ORDER BY category').fetchall()
 
-    # Get dates for sidebar
-    dates = c.execute('SELECT DISTINCT date FROM posts ORDER BY date DESC').fetchall()
+    # Get dates for filter (limit to 7 most recent)
+    dates_raw = c.execute('SELECT DISTINCT date FROM posts WHERE date != "" ORDER BY date DESC LIMIT 7').fetchall()
+    dates = []
+    for d in dates_raw:
+        full_date = d['date']
+        # Create display label: "2026 年 7 月 25 日" -> "7月25日"
+        m = re.search(r'(\d{1,2})\s*月\s*(\d{1,2})\s*日', full_date)
+        if m:
+            label = f'{m.group(1)}月{m.group(2)}日'
+        else:
+            label = full_date
+        dates.append({'full': full_date, 'label': label})
 
     conn.close()
 
@@ -58,7 +69,7 @@ def post(post_id):
     prev_post = c.execute('SELECT post_id, title FROM posts WHERE post_id < ? ORDER BY post_id DESC LIMIT 1', (post_id,)).fetchone()
     next_post = c.execute('SELECT post_id, title FROM posts WHERE post_id > ? ORDER BY post_id ASC LIMIT 1', (post_id,)).fetchone()
 
-    # Get all images for this post from scrape results (for 潮汐文萃 and video posts)
+    # Get all images for this post from scrape results (for 每日拾趣 and video posts)
     images = []
     try:
         import json

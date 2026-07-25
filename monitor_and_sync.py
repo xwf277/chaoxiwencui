@@ -122,6 +122,8 @@ def scrape_homepage_pages(config):
             if title:
                 # Remove leading category text like "文摘•" or "博海拾贝•"
                 title = re.sub(r'^(文摘|博海拾贝|视频|优惠)[•·]', '', title).strip()
+                # Replace 博海拾贝 in title with 每日拾趣
+                title = title.replace('博海拾贝', '每日拾趣')
 
             # Get date
             date_span = art.find('span', class_='entry-date')
@@ -168,6 +170,8 @@ def scrape_article_detail(post_id):
     # Extract title
     title_elem = soup.find('h1', class_='post-title') or soup.find('h1')
     title = title_elem.text.strip() if title_elem else ''
+    # Replace 博海拾贝 in title with 每日拾趣
+    title = title.replace('博海拾贝', '每日拾趣')
 
     # Extract date
     date_span = soup.find('span', class_='entry-date')
@@ -269,11 +273,15 @@ def scrape_article_detail(post_id):
 
     # Get clean HTML
     content_html = str(content_div)
+    # Replace 博海拾贝 in content with 每日拾趣
+    content_html = content_html.replace('博海拾贝', '每日拾趣')
 
     # Get plain text content
     content_text = content_div.get_text(separator='\n', strip=True)
     # Clean up excessive newlines
     content_text = re.sub(r'\n{3,}', '\n\n', content_text)
+    # Replace 博海拾贝 in content with 每日拾趣
+    content_text = content_text.replace('博海拾贝', '每日拾趣')
 
     # Extract excerpt (first meaningful paragraph, up to 200 chars)
     excerpt = ''
@@ -284,6 +292,8 @@ def scrape_article_detail(post_id):
             break
     if not excerpt:
         excerpt = content_text[:200]
+    # Replace 博海拾贝 in excerpt with 每日拾趣
+    excerpt = excerpt.replace('博海拾贝', '每日拾趣')
 
     return {
         'title': title,
@@ -483,7 +493,7 @@ def push_via_github_api(config, commit_msg):
 
 def main():
     print(f'{"="*60}')
-    print(f'潮汐文萃 - 网站监控同步')
+    print(f'每日拾趣 - 网站监控同步')
     print(f'时间: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     print(f'{"="*60}')
 

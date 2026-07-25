@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>潮汐文萃 – 潮汐文萃官方网站</title>
+    <title>每日拾趣 – 每日拾趣官方网站</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -11,8 +11,8 @@
     <header class="site-header">
         <div class="header-inner">
             <div class="site-logo">
-                <h1><a href="/">潮汐文萃</a></h1>
-                <span class="site-desc">潮汐文萃官方网站</span>
+                <h1><a href="/">每日拾趣</a></h1>
+                <span class="site-desc">每日拾趣官方网站</span>
             </div>
         </div>
     </header>
@@ -33,9 +33,10 @@
 
             <!-- Date Filter -->
             <div class="date-filter">
-                <a href="/" class="date-btn{% if not current_date %} active{% endif %}">全部日期</a>
-                <a href="/?date=7月 23 日" class="date-btn{% if current_date == '7月 23 日' %} active{% endif %}">7月23日</a>
-                <a href="/?date=7月 22 日" class="date-btn{% if current_date == '7月 22 日' %} active{% endif %}">7月22日</a>
+                <a href="{% if current_category %}/?category={{ current_category }}{% else %}/{% endif %}" class="date-btn{% if not current_date %} active{% endif %}">全部日期</a>
+                {% for d in dates %}
+                <a href="/?date={{ d.full }}{% if current_category %}&category={{ current_category }}{% endif %}" class="date-btn{% if current_date == d.full %} active{% endif %}">{{ d.label }}</a>
+                {% endfor %}
             </div>
 
             <!-- Post List -->
@@ -80,7 +81,7 @@
     <!-- Footer -->
     <footer class="site-footer">
         <div class="footer-inner">
-            <p>© 2026 潮汐文萃 · 本站内容来自 <a href="https://www.bohaishibei.com/" target="_blank">bohaishibei.com</a> 最近2天的收录</p>
+            <p>© 2026 每日拾趣</p>
         </div>
     </footer>
 </body>
