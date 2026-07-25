@@ -9,3 +9,5 @@ env/
 .env
 .DS_Store
 Thumbs.db
+config.json
+monitor_log.txt
