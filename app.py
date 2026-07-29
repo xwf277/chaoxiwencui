@@ -2,10 +2,13 @@ from flask import Flask, render_template, request, Response
 import sqlite3
 import os
 import re
+import hashlib
 import requests as req_lib
 
 app = Flask(__name__)
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'database.db')
+CACHE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'img_cache')
+os.makedirs(CACHE_DIR, exist_ok=True)
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
@@ -69,6 +72,9 @@ def post(post_id):
     prev_post = c.execute('SELECT post_id, title FROM posts WHERE post_id < ? ORDER BY post_id DESC LIMIT 1', (post_id,)).fetchone()
     next_post = c.execute('SELECT post_id, title FROM posts WHERE post_id > ? ORDER BY post_id ASC LIMIT 1', (post_id,)).fetchone()
 
+    # Get categories for navigation (same as index page)
+    categories = c.execute('SELECT DISTINCT category, category_slug FROM posts ORDER BY category').fetchall()
+
     # Get all images for this post from scrape results (for 每日拾趣 and video posts)
     images = []
     try:
@@ -94,11 +100,43 @@ def post(post_id):
         return render_template('404.html'), 404
 
     return render_template('post.html', article=article, prev_post=prev_post,
-                           next_post=next_post, images=images)
+                           next_post=next_post, images=images,
+                           categories=categories,
+                           current_category=article['category_slug'] if article else None)
+
+def _get_cache_path(url):
+    """Generate local cache file path from image URL."""
+    url_hash = hashlib.md5(url.encode('utf-8')).hexdigest()
+    ext = '.jpg'
+    lower_url = url.lower().split('?')[0]
+    for e in ['.gif', '.jpg', '.jpeg', '.png', '.webp', '.svg', '.bmp']:
+        if lower_url.endswith(e):
+            ext = e if e != '.jpeg' else '.jpg'
+            break
+    return os.path.join(CACHE_DIR, url_hash + ext)
+
+
+def _guess_content_type(filepath):
+    """Guess MIME type from file extension."""
+    lower = filepath.lower()
+    if lower.endswith('.gif'):
+        return 'image/gif'
+    elif lower.endswith('.png'):
+        return 'image/png'
+    elif lower.endswith('.webp'):
+        return 'image/webp'
+    elif lower.endswith('.svg'):
+        return 'image/svg+xml'
+    elif lower.endswith('.bmp'):
+        return 'image/bmp'
+    else:
+        return 'image/jpeg'
+
 
 @app.route('/imgproxy')
 def imgproxy():
-    """Image proxy: fetch images from original CDN with correct Referer header."""
+    """Image proxy with local caching: first request fetches from origin CDN
+    and saves to img_cache/; subsequent requests serve from local disk."""
     url = request.args.get('url', '')
     if not url:
         return Response(status=400)
@@ -109,23 +147,40 @@ def imgproxy():
                        'cdn.bohaishibei.com']
     from urllib.parse import urlparse
     parsed = urlparse(url)
+    if not parsed.hostname:
+        return Response(status=400)
     domain_allowed = any(d in parsed.hostname for d in allowed_domains)
     if not domain_allowed:
         return Response(status=403)
 
+    cache_path = _get_cache_path(url)
+
+    # --- Cache HIT: serve directly from local disk ---
+    if os.path.exists(cache_path):
+        try:
+            with open(cache_path, 'rb') as f:
+                cached_data = f.read()
+            content_type = _guess_content_type(cache_path)
+            response = Response(cached_data, content_type=content_type)
+            response.headers['Cache-Control'] = 'public, max-age=2592000'
+            response.headers['X-Cache'] = 'HIT'
+            response.headers['Content-Length'] = str(len(cached_data))
+            return response
+        except Exception as e:
+            print(f'Cache read error for {url}: {e}, falling back to fetch')
+
+    # --- Cache MISS: fetch from origin CDN ---
     try:
         headers = {
             'Referer': 'https://www.bohaishibei.com/',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
-        # Download the full image content (not streaming, to ensure complete data)
         resp = req_lib.get(url, headers=headers, timeout=60)
         resp.raise_for_status()
-        
+
         # Determine content type
         content_type = resp.headers.get('Content-Type', '')
         if not content_type.startswith('image/'):
-            # Try to detect from URL extension
             if '.gif' in url:
                 content_type = 'image/gif'
             elif '.jpg' in url or '.jpeg' in url:
@@ -136,11 +191,18 @@ def imgproxy():
                 content_type = 'image/webp'
             else:
                 content_type = 'application/octet-stream'
-        
-        # Return the image data with caching headers
+
+        # Save to local cache
+        try:
+            with open(cache_path, 'wb') as f:
+                f.write(resp.content)
+        except Exception as e:
+            print(f'Cache write error for {url}: {e}')
+
         response = Response(resp.content, content_type=content_type)
-        response.headers['Cache-Control'] = 'public, max-age=86400'
-        response.headers['Content-Length'] = len(resp.content)
+        response.headers['Cache-Control'] = 'public, max-age=2592000'
+        response.headers['X-Cache'] = 'MISS'
+        response.headers['Content-Length'] = str(len(resp.content))
         return response
     except Exception as e:
         print(f'Image proxy error for {url}: {e}')

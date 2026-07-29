@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B3D"/>
+      <stop offset="100%" stop-color="#FF8C42"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-color="#FF6B3D" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Circle badge -->
+  <circle cx="32" cy="32" r="30" fill="url(#logoGrad)" filter="url(#shadow)"/>
+  <!-- Main four-pointed star (sparkle) -->
+  <path d="M32 10 Q34.5 29.5 54 32 Q34.5 34.5 32 54 Q29.5 34.5 10 32 Q29.5 29.5 32 10 Z" fill="#FFFBF6"/>
+  <!-- Small accent sparkle -->
+  <path d="M48 14 Q49 19 54 20 Q49 21 48 26 Q47 21 42 20 Q47 19 48 14 Z" fill="#FFFBF6" opacity="0.5"/>
+</svg>

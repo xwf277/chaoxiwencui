@@ -11,3 +11,6 @@ env/
 Thumbs.db
 config.json
 monitor_log.txt
+img_cache/
+temp_*.webp
+outputs/

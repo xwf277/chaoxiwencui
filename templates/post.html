@@ -5,14 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ article.title }} – 每日拾趣</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="icon" type="image/svg+xml" href="/static/logo.svg">
 </head>
 <body>
     <!-- Header -->
     <header class="site-header">
         <div class="header-inner">
             <div class="site-logo">
-                <h1><a href="/">每日拾趣</a></h1>
-                <span class="site-desc">每日拾趣官方网站</span>
+                <div class="logo-brand">
+                    <a href="/" class="logo-link">
+                        <img src="/static/logo.svg" alt="每日拾趣" class="logo-img">
+                        <span class="logo-text">每日拾趣</span>
+                    </a>
+                    <a href="https://meirishiqu.com" class="site-domain">meirishiqu.com</a>
+                </div>
+                <span class="site-desc">一个科技综合分享平台，风格主打"轻阅读"，内容以娱乐、创意、趣味图片等为主。"每日轻拾一趣，开心一日不停"。</span>
             </div>
         </div>
     </header>
@@ -20,10 +28,10 @@
     <!-- Navigation -->
     <nav class="main-nav">
         <div class="nav-inner">
-            <a href="/" class="nav-item">全部</a>
-            <a href="/?category=digest" class="nav-item">文摘</a>
-            <a href="/?category=videos" class="nav-item">视频</a>
-            <a href="/?category=main" class="nav-item">每日拾趣</a>
+            <a href="/" class="nav-item{% if not current_category %} active{% endif %}">全部</a>
+            {% for cat in categories %}
+            <a href="/?category={{ cat.category_slug }}" class="nav-item{% if current_category == cat.category_slug %} active{% endif %}">{{ cat.category }}</a>
+            {% endfor %}
         </div>
     </nav>
 

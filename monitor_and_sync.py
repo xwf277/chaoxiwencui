@@ -529,11 +529,18 @@ def main():
             title = detail['title'] or article['title']
             date = detail['date'] or article['date']
 
+            # Override category for 微语录精选 articles
+            category = article['category_name']
+            category_slug = article['category_slug']
+            if '微语录精选' in title:
+                category = '微语录'
+                category_slug = 'quotes'
+
             insert_post(
                 post_id=article['post_id'],
                 title=title,
-                category=article['category_name'],
-                category_slug=article['category_slug'],
+                category=category,
+                category_slug=category_slug,
                 date=date,
                 excerpt=detail['excerpt'],
                 content=detail['content'],

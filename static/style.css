@@ -21,7 +21,7 @@ a {
 }
 
 a:hover {
-    color: #c0392b;
+    color: #FF6B3D;
 }
 
 /* Header */
@@ -40,30 +40,72 @@ a:hover {
     justify-content: space-between;
 }
 
-.site-logo h1 {
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    width: fit-content;
+}
+
+.logo-img {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    display: block;
+}
+
+.logo-text {
     font-size: 28px;
     font-weight: 700;
     letter-spacing: 2px;
+    color: #FF6B3D;
 }
 
-.site-logo h1 a {
-    color: #c0392b;
+.logo-link:hover .logo-text {
+    color: #FF8C42;
 }
 
-.site-logo h1 a:hover {
-    color: #a93226;
+.site-logo {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.logo-brand {
+    display: flex;
+    flex-direction: column;
 }
 
 .site-desc {
-    color: #888;
+    color: #999;
+    font-size: 12px;
+    margin-left: 0;
+    margin-top: 0;
+    line-height: 1.5;
+    max-width: 600px;
+}
+
+.site-domain {
+    display: inline-block;
+    margin-left: 46px;
+    margin-top: 2px;
+    color: #FF6B3D;
     font-size: 13px;
-    margin-left: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+}
+
+.site-domain:hover {
+    color: #FF8C42;
+    text-decoration: underline;
 }
 
 /* Navigation */
 .main-nav {
     background: #fff;
-    border-bottom: 2px solid #c0392b;
+    border-bottom: 2px solid #FF6B3D;
     margin-bottom: 20px;
 }
 
@@ -86,13 +128,13 @@ a:hover {
 }
 
 .nav-item:hover {
-    color: #c0392b;
+    color: #FF6B3D;
     background: #f9f9f9;
 }
 
 .nav-item.active {
-    color: #c0392b;
-    border-bottom: 3px solid #c0392b;
+    color: #FF6B3D;
+    border-bottom: 3px solid #FF6B3D;
     font-weight: 700;
 }
 
@@ -112,7 +154,7 @@ a:hover {
 
 /* Featured Section */
 .featured-section {
-    background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+    background: linear-gradient(135deg, #FF6B3D 0%, #e74c3c 100%);
     padding: 25px 30px;
     margin: -30px -30px 30px -30px;
     border-radius: 4px 4px 0 0;
@@ -193,11 +235,11 @@ a:hover {
 
 .date-btn:hover {
     background: #e8e8e8;
-    color: #c0392b;
+    color: #FF6B3D;
 }
 
 .date-btn.active {
-    background: #c0392b;
+    background: #FF6B3D;
     color: #fff;
 }
 
@@ -270,13 +312,13 @@ a:hover {
 }
 
 .post-category {
-    color: #c0392b;
+    color: #FF6B3D;
     font-weight: 500;
     font-size: 13px;
 }
 
 .post-category:hover {
-    color: #a93226;
+    color: #FF8C42;
 }
 
 .post-dot {
@@ -306,7 +348,7 @@ a:hover {
 }
 
 .post-title a:hover {
-    color: #c0392b;
+    color: #FF6B3D;
 }
 
 .post-excerpt {
@@ -423,12 +465,12 @@ a:hover {
 }
 
 .post-content .entry-content a {
-    color: #c0392b;
+    color: #FF6B3D;
     text-decoration: none;
 }
 
 .post-content .entry-content a:hover {
-    color: #a93226;
+    color: #FF8C42;
 }
 
 /* Inline GIF animations */
@@ -466,7 +508,7 @@ a:hover {
 }
 
 .post-nav-prev:hover, .post-nav-next:hover {
-    color: #c0392b;
+    color: #FF6B3D;
 }
 
 /* No Posts */
@@ -508,11 +550,27 @@ a:hover {
         align-items: flex-start;
     }
 
-    .site-logo h1 {
+    .site-logo {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .logo-img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .logo-text {
         font-size: 22px;
     }
 
     .site-desc {
+        margin-left: 0;
+        margin-top: 4px;
+    }
+
+    .site-domain {
         margin-left: 0;
         margin-top: 4px;
     }
